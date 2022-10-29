@@ -76,13 +76,15 @@ def make():
     base.set_env("GYP_MSVS_VERSION", config.option("vs-version"))
 
   if not base.is_dir("v8"):
-    base.cmd("./depot_tools/fetch", ["v8"], True)
-    if ("windows" == base.host_platform()):
-      os.chdir("v8")
-      base.cmd("git", ["config", "--system", "core.longpaths", "true"])
-      os.chdir("../")
-    base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
-    base.cmd("gclient", ["sync", "--force"], True)
+    print("please install v8 8.9")
+    sys.exit(0)
+#    base.cmd("./depot_tools/fetch", ["v8"], True)
+#    if ("windows" == base.host_platform()):
+#      os.chdir("v8")
+#      base.cmd("git", ["config", "--system", "core.longpaths", "true"])
+#      os.chdir("../")
+#    base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
+#    base.cmd("gclient", ["sync", "--force"], True)
     base.cmd_in_dir(base_dir + "/v8", "rm", ["-f", "src/codegen/mips64/assembler-mips64.h", "src/objects/managed.h", "test/cctest/cctest-utils.h", "buildtools/linux64/gn"])
     base.cmd_in_dir(root_dir + "/core_changed", "cp", ["assembler-mips64.h", base_dir + "/v8/src/codegen/mips64"])
     base.cmd_in_dir(root_dir + "/core_changed", "cp", ["managed.h", base_dir + "/v8/src/objects"])

@@ -57,10 +57,10 @@ config.parse_defaults()
 
 base.check_build_version(base_dir)
 
-root_dir = base_dir + "/../.."
+root_dir = base_dir + "/.."
 if not base.is_dir(root_dir + "/DocumentServer"):
   base.cmd_in_dir(root_dir, "git", ["clone", "--recursive", "-b", "v7.1.1", "https://github.com/ONLYOFFICE/DocumentServer.git"])
-  moving_dir = base_dir + "/../../DocumentServer"
+  moving_dir = root_dir + "/DocumentServer"
   base.cmd_in_dir(moving_dir, "mv", ["core", ".."])
   base.cmd_in_dir(moving_dir, "mv", ["core-fonts", ".."])
   base.cmd_in_dir(moving_dir, "mv", ["dictionaries", ".."])
