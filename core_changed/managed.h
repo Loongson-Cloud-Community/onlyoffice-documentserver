@@ -94,7 +94,7 @@ class Managed : public Foreign {
       Isolate* isolate, size_t estimated_size,
       std::shared_ptr<CppType> shared_ptr) {
     reinterpret_cast<v8::Isolate*>(isolate)
-        ->AdjustAmountOfExternalAllocatedMemory(estimated_size);
+        ->AdjustAmountOfExternalAllocatedMemory(static_cast<int64_t>(estimated_size));
     auto destructor = new ManagedPtrDestructor(
         estimated_size, new std::shared_ptr<CppType>{std::move(shared_ptr)},
         Destructor);

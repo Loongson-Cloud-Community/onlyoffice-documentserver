@@ -50,7 +50,8 @@ def make():
 
   if ("windows" == base.host_platform()):
     pkg_target += "-win"
-
+  base.cmd_in_dir("/usr/local/lib/node_modules/pkg/node_modules/pkg_fetch/lib-es5", "rm", ["-f", "index.js"])
+  base.cmd_in_dir(git_dir + "/core_changed", "cp", ["index.js", "/usr/local/lib/node_modules/pkg/node_modules/pkg-fetch/lib-es5"])
   base.cmd_in_dir(server_build_dir + "/DocService", "pkg", [".", "-t", pkg_target, "--options", "max_old_space_size=4096", "-o", "docservice"])
   base.cmd_in_dir(server_build_dir + "/FileConverter", "pkg", [".", "-t", pkg_target, "-o", "converter"])
   base.cmd_in_dir(server_build_dir + "/Metrics", "pkg", [".", "-t", pkg_target, "-o", "metrics"])

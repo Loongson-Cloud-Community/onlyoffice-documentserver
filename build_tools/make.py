@@ -21,6 +21,12 @@ config.parse()
 base_dir = base.get_script_dir(__file__)
 
 base.set_env("BUILD_PLATFORM", config.option("platform"))
+base.set_env("GCLIENT_PY3","0")
+base.set_env("USE_PYTHON3","0")
+base.set_env("DEPOT_TOOLS_UPDATE","0")
+base.set_env("DEPOT_TOOLS_BOOTSTRAP_PYTHON3","0")
+base.set_env("SKIP_GCE_AUTH_FOR_GIT","1")
+base.set_env("KERNEL_BITS","64")
 
 # branding
 if ("1" != base.get_env("OO_RUNNING_BRANDING")) and ("" != config.option("branding")):
@@ -51,10 +57,31 @@ config.parse_defaults()
 
 base.check_build_version(base_dir)
 
-# update
-if ("1" == config.option("update")):
-  repositories = base.get_repositories()
-  base.update_repositories(repositories)
+root_dir = base_dir + "/../.."
+if not base.is_dir(root_dir + "/DocumentServer"):
+  base.cmd_in_dir(root_dir, "git", ["clone", "--recursive", "-b", "v7.1.1", "https://github.com/ONLYOFFICE/DocumentServer.git"])
+  moving_dir = base_dir + "/../../DocumentServer"
+  base.cmd_in_dir(moving_dir, "mv", ["core", ".."])
+  base.cmd_in_dir(moving_dir, "mv", ["core-fonts", ".."])
+  base.cmd_in_dir(moving_dir, "mv", ["dictionaries", ".."])
+  base.cmd_in_dir(moving_dir, "mv", ["sdkjs", ".."])
+  base.cmd_in_dir(moving_dir, "mv", ["sdkjs-plugins", ".."])
+  base.cmd_in_dir(moving_dir, "mv", ["server", ".."])
+  base.cmd_in_dir(moving_dir, "mv", ["web-apps", ".."])
+  base.cmd_in_dir(root_dir + "/core/Common/3dParty/v8", "rm", ["-f", "v8.pri"])
+  base.cmd_in_dir(root_dir + "/core_changed", "cp", ["v8.pri", "../core/Common/3dParty/v8"])
+  base.cmd_in_dir(root_dir + "/core/Common", "rm", ["-f", "base.pri"])
+  base.cmd_in_dir(root_dir + "/core_changed", "cp", ["base.pri", "../core/Common"])
+
+if not base.is_dir(root_dir + "/document-templates"):
+  base.cmd_in_dir(root_dir, "git", ["clone", "-b", "v7.1.1.76", "https://github.com/ONLYOFFICE/document-templates.git"])
+if not base.is_dir(root_dir + "/sdkjs-forms"):
+  base.cmd_in_dir(root_dir, "git", ["clone", "-b", "v7.1.1.76", "https://github.com/ONLYOFFICE/sdkjs-forms.git"])
+if not base.is_dir(root_dir + "/document-server-integration"):
+  base.cmd_in_dir(root_dir, "git", ["clone", "--recursive", "-b", "v7.1.1.76", "https://github.com/ONLYOFFICE/document-server-integration.git"])
+if not base.is_dir(root_dir + "/DocumentBuilder"):
+  base.cmd_in_dir(root_dir, "git", ["clone", "--recursive", "-b", "v7.1.1.76", "https://github.com/ONLYOFFICE/DocumentBuilder.git"])
+
 
 base.configure_common_apps()
 

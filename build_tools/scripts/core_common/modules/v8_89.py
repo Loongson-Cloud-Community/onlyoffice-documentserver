@@ -22,6 +22,12 @@ def make_args(args, platform, is_64=True, is_debug=False):
     args_copy.append("v8_target_cpu=\\\"arm64\\\"")
     args_copy.append("use_sysroot=true")
   
+  if (platform == "linux_mips64el"):
+    args_copy.append("target_cpu=\\\"mips64el\\\"") 
+    args_copy.append("v8_target_cpu=\\\"mips64el\\\"")
+    args_copy.append("is_clang=false")
+    args_copy.append("use_sysroot=false")
+      
   if is_debug:
     args_copy.append("is_debug=true")
   else:
@@ -53,7 +59,7 @@ def ninja_windows_make(args, is_64=True, is_debug=False):
 def make():
   old_env = dict(os.environ)
   old_cur = os.getcwd()
-
+  root_dir = base.get_script_dir() + "/../.."
   base_dir = base.get_script_dir() + "/../../core/Common/3dParty/v8_89"
   if not base.is_dir(base_dir):
     base.create_dir(base_dir)
@@ -61,7 +67,8 @@ def make():
   os.chdir(base_dir)
   if not base.is_dir("depot_tools"):
     base.cmd("git", ["clone", "https://chromium.googlesource.com/chromium/tools/depot_tools.git"])
-
+    base.cmd_in_dir(base_dir + "/depot_tools", "rm", ["-f", "ninja"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["ninja", base_dir + "/depot_tools"])
   os.environ["PATH"] = base_dir + "/depot_tools" + os.pathsep + os.environ["PATH"]
 
   if ("windows" == base.host_platform()):
@@ -76,13 +83,19 @@ def make():
       os.chdir("../")
     base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
     base.cmd("gclient", ["sync", "--force"], True)
+    base.cmd_in_dir(base_dir + "/v8", "rm", ["-f", "src/codegen/mips64/assembler-mips64.h", "src/objects/managed.h", "test/cctest/cctest-utils.h", "buildtools/linux64/gn"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["assembler-mips64.h", base_dir + "/v8/src/codegen/mips64"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["managed.h", base_dir + "/v8/src/objects"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["cctest-utils.h", base_dir + "/v8/test/cctest"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["gn", base_dir + "/v8/buildtools/linux64"])
 
+    
   if ("windows" == base.host_platform()):
     base.replaceInFile("v8/build/config/win/BUILD.gn", ":static_crt", ":dynamic_crt")
 
     if not base.is_file("v8/src/base/platform/wrappers.cc"):
       base.writeFile("v8/src/base/platform/wrappers.cc", "#include \"src/base/platform/wrappers.h\"\n")
-
+  
   os.chdir("v8")
   
   gn_args = ["v8_static_library=true",
@@ -93,7 +106,7 @@ def make():
              "treat_warnings_as_errors=false"]
 
   if config.check_option("platform", "linux_64"):
-    base.cmd2("gn", ["gen", "out.gn/linux_64", make_args(gn_args, "linux")])
+    base.cmd2("gn", ["gen", "out.gn/linux_64", make_args(gn_args, "linux_mips64el", False)])
     base.cmd("ninja", ["-C", "out.gn/linux_64"])
 
   if config.check_option("platform", "linux_32"):

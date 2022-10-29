@@ -6,6 +6,7 @@ import base
 import os
 import subprocess
 import deps
+import platform
 
 def get_branch_name(directory):
   cur_dir = os.getcwd()
@@ -17,14 +18,27 @@ def get_branch_name(directory):
   os.chdir(cur_dir)
   return current_branch
 
+def download_node():
+  base.cmd("mkdir",["-p", "/root/.pkg-cache/v3.4"])
+  if(-1 != platform.machine().find("mips64")):
+    base.cmd("wget",["-P", "/root/.pkg-cache/v3.4", "https://github.com/Loongson-Cloud-Commun
+ity/pkg-fetch/releases/download/v3.4/fetched-v14.20.0-linux-mips64el"])
+  return
+
 def install_qt():
   # qt
   if not base.is_file("./qt_source_5.9.9.tar.xz"):
-    base.download("https://download.qt.io/archive/qt/5.9/5.9.9/single/qt-everywhere-opensource-src-5.9.9.tar.xz", "./qt_source_5.9.9.tar.xz")
-
+    if(-1 == platform.machine().find("mips64")):
+      base.download("https://download.qt.io/archive/qt/5.9/5.9.9/single/qt-everywhere-opensou
+rce-src-5.9.9.tar.xz", "./qt_source_5.9.9.tar.xz")
+    else:
+      base.download("https://github.com/Loongson-Cloud-Community/qt5/releases/download/v5.9.9
+/qt-everywhere-opensource-src-5.9.9-mips64.tar.gz", "./qt_source_5.9.9.tar.gz")
   if not base.is_dir("./qt-everywhere-opensource-src-5.9.9"):
-    base.cmd("tar", ["-xf", "./qt_source_5.9.9.tar.xz"])
-
+    if(-1 == platform.machine().find("mips64")):
+      base.cmd("tar", ["-xf", "./qt_source_5.9.9.tar.xz"])
+    else:
+      base.cmd("tar", ["-zxf", "./qt_source_5.9.9.tar.gz"])
   qt_params = ["-opensource",
                "-confirm-license",
                "-release",
@@ -63,6 +77,9 @@ if not base.is_file("./node_js_setup_10.x"):
 if not base.is_dir("./qt_build"):  
   print("install qt...")
   install_qt()
+if not base.is_dir("/root/.pkg-cache/v3.4/"):
+  print("download node...")
+  download_node()
 
 branch = get_branch_name("../..")
 

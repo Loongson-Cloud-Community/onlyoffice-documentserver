@@ -79,12 +79,12 @@ def make():
     return
 
   if (-1 != config.option("platform").find("linux")) and not base.is_dir("../build/linux_64"):
-    base.cmd("./config", ["no-shared", "no-asm", "--prefix=" + old_cur_dir + "/build/linux_64", "--openssldir=" + old_cur_dir + "/build/linux_64"])
+    base.cmd("./Configure", ["linux64-mips64", "no-shared", "no-asm", "--prefix=" + old_cur_dir + "/build/linux_64", "--openssldir=" + old_cur_dir + "/build/linux_64"])
     base.replaceInFile("./Makefile", "CFLAGS=-Wall -O3", "CFLAGS=-Wall -O3 -fvisibility=hidden")
     base.replaceInFile("./Makefile", "CXXFLAGS=-Wall -O3", "CXXFLAGS=-Wall -O3 -fvisibility=hidden")
     base.cmd("make")
     base.cmd("make", ["install"])
-    # TODO: support x86
+    # TODO: support mips64
 
   if (-1 != config.option("platform").find("linux_arm64")) and not base.is_dir("../build/linux_arm64"):
     if ("x86_64" != platform.machine()):

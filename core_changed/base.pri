@@ -106,6 +106,11 @@ linux-g++:contains(QMAKE_HOST.arch, aarch64): {
     CONFIG += core_linux_64
     CONFIG += core_linux_host_arm64
 }
+linux-g++:contains(QMAKE_HOST.arch, mips64): {
+    message("linux-64")
+    CONFIG += core_linux_64
+    CONFIG += core_linux_host_mips64
+}
 !core_linux_64: {
     message("linux-32")
     CONFIG += core_linux_32
@@ -190,6 +195,8 @@ core_windows {
 }
 
 core_linux {
+    QMAKE_CFLAGS += -mxgot
+    QMAKE_CXXFLAGS += -mxgot
     equals(TEMPLATE, app) {
         QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
         QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
