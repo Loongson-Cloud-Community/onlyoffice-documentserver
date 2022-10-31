@@ -7,7 +7,7 @@ import base
 import os
 import subprocess
 import v8_89
-
+import platform
 def clean():
   if base.is_dir("depot_tools"):
     base.delete_dir_with_access_error("depot_tools");
@@ -50,7 +50,8 @@ def is_use_clang():
   is_clang = "false"
   if (gcc_version >= 6):
     is_clang = "true"
-
+  if (-1 != platform.machine().find("loongarch64")):
+    is_clang = "false"
   print("gcc major version: " + str(gcc_version) + ", use clang:" + is_clang)
   return is_clang
 
@@ -78,7 +79,8 @@ def make():
     use_v8_89 = True
   if config.check_option("platform", "linux_arm64"):
     use_v8_89 = True
-
+  if (-1 != platform.machine().find("loongarch64")):
+    use_v8_89 = True
   if (use_v8_89):
     v8_89.make()
     return

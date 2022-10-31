@@ -14,6 +14,7 @@ def make():
     icu_android.make()
 
   base_dir = base.get_script_dir() + "/../../core/Common/3dParty/icu"
+  changed_dir = base.get_script_dir() + "/../../core_changed"
   old_cur = os.getcwd()
   os.chdir(base_dir)
 
@@ -22,6 +23,10 @@ def make():
 
   if not base.is_dir("icu"):
     base.cmd("svn", ["export", "https://github.com/unicode-org/icu/tags/release-" + icu_major + "-" + icu_minor + "/icu4c", "./icu", "--non-interactive", "--trust-server-cert"])
+    base.cmd_in_dir(base_dir + "/icu/source", "rm", ["-f", "config.sub"])
+    base.cmd_in_dir(base_dir + "/icu/source", "rm", ["-f", "config.guess"])
+    base.cmd_in_dir(changed_dir, "cp", ["config.sub", base_dir + "/icu/source"])
+    base.cmd_in_dir(changed_dir, "cp", ["config.guess", base_dir + "/icu/source"])
 
   if ("windows" == base.host_platform()):
     platformToolset = "v140"

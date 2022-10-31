@@ -598,6 +598,8 @@ def qt_config(platform):
     config_param += " linux_arm64"
   if config.check_option("platform", "linux_arm64"):
     config_param += " v8_version_89"
+  if config.check_option("platform", "linux_64"):
+    config_param += " v8_version_89"
   return config_param
 
 def qt_major_version():
@@ -1243,7 +1245,7 @@ def copy_v8_files(core_dir, deploy_dir, platform, is_xp=False):
   if (config.option("vs-version") == "2019"):
     directory_v8 += "/v8_89/v8/out.gn/"
   else:
-    directory_v8 += "/v8/v8/out.gn/"
+    directory_v8 += "/v8_89/v8/out.gn/"
 
   if is_xp:
     copy_files(directory_v8 + platform + "/release/icudt*.dll", deploy_dir + "/")

@@ -41,6 +41,8 @@ cipd_bin_setup &> /dev/null
 
 if [[ $(uname -s) = MINGW* || $(uname -s) = CYGWIN* ]]; then
   cmd.exe //c $0.bat "$@"
+elif [[ $(uname -m) == "loongarch64" ]]; then
+  exec "/usr/bin/python3" "$@"
 else
   exec "$base_dir/.cipd_bin/vpython3" "$@"
 fi

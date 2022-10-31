@@ -24,6 +24,8 @@ case "$OS" in
     case "$MACHINE" in
       x86_64)
         exec "${THIS_DIR}/ninja-linux64" "$@";;
+      loongarch64)
+	exec "/usr/bin/ninja" "$@";;
       *)
         echo Unsupported architecture \($MACHINE\) -- unable to run ninja.
         print_help

@@ -176,9 +176,9 @@ function need(opts) {
                     }
                     return [4 /*yield*/, (0, utils_1.hash)(fetched)];
                 case 2:
-                    if ((_c.sent()) === expected_1.EXPECTED_HASHES[remote.name]) {
+                    //if ((_c.sent()) === expected_1.EXPECTED_HASHES[remote.name]) {
                     return [2 /*return*/, fetched];
-                    }
+                    //}
                     log_1.log.info('Binary hash does NOT match. Re-fetching...');
                     fs_extra_1.default.unlinkSync(fetched);
                     _c.label = 3;

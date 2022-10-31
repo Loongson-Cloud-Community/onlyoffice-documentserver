@@ -45,6 +45,8 @@ echo $@ from $(pwd) >> "$base_dir/python2_usage.txt"
 
 if [[ $(uname -s) = MINGW* || $(uname -s) = CYGWIN* ]]; then
   cmd.exe //c $0.bat "$@"
+elif [[ $(uname -m) == "loongarch64" ]]; then
+  exec "/usr/bin/python" "$@"
 else
   exec "$base_dir/.cipd_bin/vpython" "$@"
 fi

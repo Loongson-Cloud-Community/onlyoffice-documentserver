@@ -72,6 +72,9 @@ if [ -z $ARCH ]; then
         ARCH+=le
       fi
       ;;
+    loongarch64)
+      ARCH=loong64
+      ;;
     riscv64)
       ARCH=riscv64
       ;;

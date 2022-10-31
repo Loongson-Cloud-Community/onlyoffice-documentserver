@@ -21,6 +21,12 @@ def make_args(args, platform, is_64=True, is_debug=False):
     args_copy.append("target_cpu=\\\"arm64\\\"")
     args_copy.append("v8_target_cpu=\\\"arm64\\\"")
     args_copy.append("use_sysroot=true")
+  if (platform == "linux_loongarch64"):
+    args_copy = args[:]
+    args_copy.append("target_cpu=\\\"la64\\\"")
+    args_copy.append("v8_target_cpu=\\\"la64\\\"")
+    args_copy.append("is_clang=false")
+    args_copy.append("use_sysroot=false")
   
   if is_debug:
     args_copy.append("is_debug=true")
@@ -54,6 +60,7 @@ def make():
   old_env = dict(os.environ)
   old_cur = os.getcwd()
 
+  base_dir = base.get_script_dir() + "/../.."
   base_dir = base.get_script_dir() + "/../../core/Common/3dParty/v8_89"
   if not base.is_dir(base_dir):
     base.create_dir(base_dir)
@@ -61,22 +68,28 @@ def make():
   os.chdir(base_dir)
   if not base.is_dir("depot_tools"):
     base.cmd("git", ["clone", "https://chromium.googlesource.com/chromium/tools/depot_tools.git"])
-
+  base.cmd_in_dir(base_dir + "/depot_tools", "rm", ["-f", "cipd", "vpython", "vpython3", "ninja"])
+  base.cmd_in_dir(root_dir + "/core_changed", "cp", ["cipd", "ninja", "vpython", "vpython3", base_dir + "/depot_tools"])
   os.environ["PATH"] = base_dir + "/depot_tools" + os.pathsep + os.environ["PATH"]
 
+    base.cmd_in_dir(changed_dir, "cp", ["config.sub", base_dir + "/icu/source"])
   if ("windows" == base.host_platform()):
     base.set_env("DEPOT_TOOLS_WIN_TOOLCHAIN", "0")
     base.set_env("GYP_MSVS_VERSION", config.option("vs-version"))
 
   if not base.is_dir("v8"):
-    base.cmd("./depot_tools/fetch", ["v8"], True)
-    if ("windows" == base.host_platform()):
-      os.chdir("v8")
-      base.cmd("git", ["config", "--system", "core.longpaths", "true"])
-      os.chdir("../")
-    base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
-    base.cmd("gclient", ["sync", "--force"], True)
-
+    print("please install v8 8.9")
+    sys.exit(0)
+#    base.cmd("./depot_tools/fetch", ["v8"], True)
+#    if ("windows" == base.host_platform()):
+#      os.chdir("v8")
+#      base.cmd("git", ["config", "--system", "core.longpaths", "true"])
+#      os.chdir("../")
+#    base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
+#    base.cmd("gclient", ["sync", "--force"], True)
+    base.cmd_in_dir(base_dir + "/v8", "rm", ["-f", "buildtools/linux64/gn"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["gn", base_dir + "/v8/build
+tools/linux64"])
   if ("windows" == base.host_platform()):
     base.replaceInFile("v8/build/config/win/BUILD.gn", ":static_crt", ":dynamic_crt")
 
@@ -93,7 +106,7 @@ def make():
              "treat_warnings_as_errors=false"]
 
   if config.check_option("platform", "linux_64"):
-    base.cmd2("gn", ["gen", "out.gn/linux_64", make_args(gn_args, "linux")])
+    base.cmd2("gn", ["gen", "out.gn/linux_64", make_args(gn_args, "linux_loongarch64", False)])
     base.cmd("ninja", ["-C", "out.gn/linux_64"])
 
   if config.check_option("platform", "linux_32"):
