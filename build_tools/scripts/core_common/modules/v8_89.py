@@ -60,7 +60,7 @@ def make():
   old_env = dict(os.environ)
   old_cur = os.getcwd()
 
-  base_dir = base.get_script_dir() + "/../.."
+  root_dir = base.get_script_dir() + "/../.."
   base_dir = base.get_script_dir() + "/../../core/Common/3dParty/v8_89"
   if not base.is_dir(base_dir):
     base.create_dir(base_dir)
@@ -72,7 +72,6 @@ def make():
   base.cmd_in_dir(root_dir + "/core_changed", "cp", ["cipd", "ninja", "vpython", "vpython3", base_dir + "/depot_tools"])
   os.environ["PATH"] = base_dir + "/depot_tools" + os.pathsep + os.environ["PATH"]
 
-    base.cmd_in_dir(changed_dir, "cp", ["config.sub", base_dir + "/icu/source"])
   if ("windows" == base.host_platform()):
     base.set_env("DEPOT_TOOLS_WIN_TOOLCHAIN", "0")
     base.set_env("GYP_MSVS_VERSION", config.option("vs-version"))
@@ -88,8 +87,7 @@ def make():
 #    base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
 #    base.cmd("gclient", ["sync", "--force"], True)
     base.cmd_in_dir(base_dir + "/v8", "rm", ["-f", "buildtools/linux64/gn"])
-    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["gn", base_dir + "/v8/build
-tools/linux64"])
+    base.cmd_in_dir(root_dir + "/core_changed", "cp", ["gn", base_dir + "/v8/buildtools/linux64"])
   if ("windows" == base.host_platform()):
     base.replaceInFile("v8/build/config/win/BUILD.gn", ":static_crt", ":dynamic_crt")
 

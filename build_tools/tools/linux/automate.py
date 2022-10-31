@@ -6,7 +6,7 @@ import base
 import os
 import subprocess
 import deps
-
+import platform
 def get_branch_name(directory):
   cur_dir = os.getcwd()
   os.chdir(directory)
@@ -32,7 +32,7 @@ def install_qt():
       else:
         base.download("https://github.com/Loongson-Cloud-Community/qt5/releases/download/v5.9.9/qt-everywhere-opensource-src-5.9.9-loongarch64.tar.gz", "./qt_source_5.9.9.tar.gz")
   if not base.is_dir("./qt-everywhere-opensource-src-5.9.9"):
-    if(-1 == platform.machine().find("mips64")):
+    if(-1 == platform.machine().find("loongarch64")):
       base.cmd("tar", ["-xf", "./qt_source_5.9.9.tar.xz"])
     else:
       base.cmd("tar", ["-zxf", "./qt_source_5.9.9.tar.gz"])
